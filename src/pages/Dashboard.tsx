@@ -1,4 +1,4 @@
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CustomerHealthTable } from "@/components/dashboard/CustomerHealthTable";
 import { ContractsEndingTable } from "@/components/dashboard/ContractsEndingTable";
@@ -6,12 +6,30 @@ import { TicketsByPriorityChart } from "@/components/dashboard/TicketsByPriority
 import { DataSourcesPopover } from "@/components/dashboard/DataSourcesPopover";
 import { AccountInsightsChart } from "@/components/dashboard/AccountInsightsChart";
 import { useDashboardData } from "@/contexts/DashboardDataContext";
+import { useCData } from "@/contexts/CDataContext";
 
 export default function Dashboard() {
   const { refreshAll, isRefreshing } = useDashboardData();
+  const { isConfigured, isLoading: isAuthLoading, error: authError } = useCData();
 
   return (
     <div className="p-8 space-y-6 animate-fade-in">
+      {/* Auth Error Banner */}
+      {authError && (
+        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-center gap-3">
+          <AlertCircle className="h-5 w-5 text-destructive" />
+          <p className="text-sm text-destructive">{authError}</p>
+        </div>
+      )}
+
+      {/* Not Configured Banner */}
+      {!isConfigured && !isAuthLoading && (
+        <div className="p-4 bg-warning/10 border border-warning/20 rounded-lg flex items-center gap-3">
+          <AlertCircle className="h-5 w-5 text-warning" />
+          <p className="text-sm">CData credentials not configured. Set VITE_CDATA_* environment variables.</p>
+        </div>
+      )}
+
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Customer Health</h1>
